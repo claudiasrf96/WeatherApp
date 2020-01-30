@@ -16,10 +16,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+
+    ArrayList<WeatherReport> citiesList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +42,23 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        try {
+                            JSONObject weatherObject=response.getJSONObject("weather");
+                            String description=weatherObject.getString("description");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        TextView textView=findViewById(R.id.ErrorText);
                     }
                 }
         );
+
+        requestQueue.add(jsonObjectRequest);
 
     }
 
@@ -71,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public String onManageCitiesClick(){
-        TextView textView= findViewById(R.id.textView);
+    public void onManageCitiesClick(){
+        TextView textView= findViewById(R.id.ErrorText);
         textView.setVisibility(View.VISIBLE);
-        return null;
+        textView.setText("An error occured!");
     }
 }
