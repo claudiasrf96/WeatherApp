@@ -16,16 +16,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    WeatherReport currentCity=null;
     ArrayList<WeatherReport> citiesList = new ArrayList<>();
+    JSONObject responseJSON=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +48,31 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONObject weatherObject=response.getJSONObject("weather");
-                            String description=weatherObject.getString("description");
+                            String weatherDescription=response.getJSONArray("weather").getJSONObject(0).getString("main");
+                            String weatherCity = response.getString("name");
+                            String weatherHumidity=response.getJSONObject("main").getString("humidity");
+                            Double temp=response.getJSONObject("main").getDouble("temp");
+                            Double calculatedTemperature= temp-273.15;
+                            Integer weatherTemperature=calculatedTemperature.intValue();
+                            Double speed=response.getJSONObject("wind").getDouble("speed");
+                            Double calculatedWindSpeed=speed*3.6;
+                            Integer weatherWindSpeed=calculatedWindSpeed.intValue();
+
+                            currentCity=new WeatherReport(weatherTemperature,weatherDescription,weatherHumidity,weatherWindSpeed, weatherCity);
+
+                            TextView temperatureText = findViewById(R.id.temperatureText);
+                            TextView cityText = findViewById(R.id.cityText);
+                            TextView descriptionText = findViewById(R.id.descriptionText);
+                            TextView humidityText = findViewById(R.id.humidityText);
+                            TextView windSpeedText = findViewById(R.id.windSpeedText);
+
+                            temperatureText.setText(currentCity.getTemperature().toString()+" ºC");
+                            cityText.setText(currentCity.getCity());
+                            descriptionText.setText(currentCity.getDescription());
+                            humidityText.setText(currentCity.getHumidity().toString()+" %");
+                            windSpeedText.setText(currentCity.getWindSpeed().toString()+" km/h");
+                            System.out.println(currentCity.toString());
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -54,12 +82,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         TextView textView=findViewById(R.id.ErrorText);
+                        textView.setVisibility(View.VISIBLE);
                     }
                 }
         );
-
         requestQueue.add(jsonObjectRequest);
-
     }
 
     @Override
@@ -85,8 +112,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onManageCitiesClick(){
-        TextView textView= findViewById(R.id.ErrorText);
-        textView.setVisibility(View.VISIBLE);
-        textView.setText("An error occured!");
+        //new activity
     }
 }

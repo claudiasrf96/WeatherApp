@@ -1,23 +1,27 @@
 package com.example.weatherapp;
 
-public class WeatherReport {
-    private String temperature;
-    private String description;
-    private int humidity;
-    private int precision;
+import java.text.DecimalFormat;
 
-    public WeatherReport(String temperature, String description, int humidity, int precision) {
+public class WeatherReport {
+    private Integer temperature;
+    private String description;
+    private String humidity;
+    private Integer windSpeed;
+    private String city;
+
+    public WeatherReport(Integer temperature, String description, String humidity, Integer windSpeed, String city) {
         this.temperature = temperature;
         this.description = description;
         this.humidity = humidity;
-        this.precision = precision;
+        this.windSpeed = windSpeed;
+        this.city=city;
     }
 
-    public String getTemperature() {
+    public Integer getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(String temperature) {
+    public void setTemperature(Integer temperature) {
         this.temperature = temperature;
     }
 
@@ -29,19 +33,33 @@ public class WeatherReport {
         this.description = description;
     }
 
-    public int getHumidity() {
+    public String getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(int humidity) {
+    public void setHumidity(String humidity) {
         this.humidity = humidity;
     }
 
-    public int getPrecision() {
-        return precision;
+    public Integer getWindSpeed() {
+        return windSpeed;
     }
 
-    public void setPrecision(int precision) {
-        this.precision = precision;
+    public void setWindSpeed(Integer windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    @Override
+    public String toString(){
+        return this.city+"      "+this.description+"     "+ this.temperature.toString()+" ºC     "+
+                this.humidity+"%     "+this.windSpeed.toString()+" km/h     ";
     }
 }
