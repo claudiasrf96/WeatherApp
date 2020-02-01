@@ -2,4 +2,12 @@
     <string name="app_name">Weather App</string>
     <string name="action_manage_cities">Manage Cities</string>
     <string name="string_error">An error has occurred</string>
+    <string name="image_desc">Weather Image</string>
+    <string name="search_city">Search City</string>
+    <string name="search_btn_text">Search</string>
+    <string name="suggest_city">City Suggestions</string>
+    <string name="suggested_city_1">London</string>
+    <string name="suggested_city_2">Berlin</string>
+    <string name="suggested_city_3">Amsterdam</string>
+    <string name="btn_add_city">Add City</string>
 </resources>

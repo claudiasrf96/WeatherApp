@@ -59,7 +59,6 @@ public class WeatherReport {
 
     @Override
     public String toString(){
-        return this.city+"      "+this.description+"     "+ this.temperature.toString()+" ºC     "+
-                this.humidity+"%     "+this.windSpeed.toString()+" km/h     ";
+        return this.city+"\n"+ this.temperature.toString()+" ºC";
     }
 }
