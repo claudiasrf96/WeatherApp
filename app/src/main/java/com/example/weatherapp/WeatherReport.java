@@ -1,6 +1,8 @@
 package com.example.weatherapp;
 
-import java.text.DecimalFormat;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 public class WeatherReport {
     private Integer temperature;
@@ -15,6 +17,14 @@ public class WeatherReport {
         this.humidity = humidity;
         this.windSpeed = windSpeed;
         this.city=city;
+    }
+
+    public WeatherReport(Parcel in) {
+        this.temperature = in.readInt();
+        this.description = in.readString();
+        this.humidity = in.readString();
+        this.windSpeed = in.readInt();
+        this.city=in.readString();
     }
 
     public Integer getTemperature() {
@@ -61,4 +71,6 @@ public class WeatherReport {
     public String toString(){
         return this.city+"\n"+ this.temperature.toString()+" ºC";
     }
+
 }
+

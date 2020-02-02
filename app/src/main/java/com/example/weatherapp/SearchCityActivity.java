@@ -18,7 +18,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +28,6 @@ public class SearchCityActivity extends AppCompatActivity {
     private WeatherReport searchedCity;
     private final String URLbase = "http://api.openweathermap.org/data/2.5/weather?";
     private final String appID = "&appid=4d26ff9720cf1c7f6334eb77b08c7bd8";
-    JsonObject response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +42,13 @@ public class SearchCityActivity extends AppCompatActivity {
 
         Button btnSearch = findViewById(R.id.btnSearch);
         searchText = findViewById(R.id.searchCity);
+
+        searchText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchText.setText("");
+            }
+        });
 
         suggestedCity1.setOnClickListener(new View.OnClickListener() {
             @Override

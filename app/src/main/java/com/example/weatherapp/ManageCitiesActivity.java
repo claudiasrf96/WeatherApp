@@ -1,23 +1,32 @@
 package com.example.weatherapp;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class ManageCitiesActivity extends AppCompatActivity {
 
-    private ArrayList<WeatherReport> citiesList = new ArrayList<>();
+    private ArrayList<WeatherReport> citiesList =new ArrayList<>();
     ArrayAdapter adapter;
     ListView listView;
-
+    WeatherReport selectedCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,29 +46,37 @@ public class ManageCitiesActivity extends AppCompatActivity {
         Integer windSpeed = intent.getIntExtra("currentCityWindSpeed", 0);
 
         WeatherReport currentCity = new WeatherReport(temperature, description, humidity, windSpeed, city);
-        addCityToList(currentCity);
+
+        loadData();
+        if (citiesList.isEmpty()) {
+            addCityToList(currentCity);
+        }
 
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, citiesList);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-
-                WeatherReport selectedCity = (WeatherReport)listView.getItemAtPosition(position);
+                selectedCity = (WeatherReport)listView.getItemAtPosition(position);
 
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("selectedCityName", selectedCity.getCity());
-                resultIntent.putExtra("selectedCityDescription", selectedCity.getDescription());
-                resultIntent.putExtra("selectedCityHumidity", selectedCity.getHumidity());
-                resultIntent.putExtra("selectedCityWindSpeed", selectedCity.getWindSpeed());
-                resultIntent.putExtra("selectedCityTemperature", selectedCity.getTemperature());
+                resultIntent.putExtra("city", selectedCity.getCity());
 
                 setResult(RESULT_OK, resultIntent);
+                saveData();
                 finish();
-
             }
         });
 
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedCity = (WeatherReport)listView.getItemAtPosition(position);
+                showDialog();
+                return true;
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.addCityButton);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -77,10 +94,9 @@ public class ManageCitiesActivity extends AppCompatActivity {
         }
     }
 
-    public void removeCityFromList (WeatherReport report){
-        if (citiesList.contains(report)) {
-            citiesList.remove(report);
-        }
+    public void removeCityFromList (){
+        citiesList.remove(selectedCity);
+        adapter.notifyDataSetChanged();
     }
 
     public void openSearchActivity(){
@@ -99,11 +115,52 @@ public class ManageCitiesActivity extends AppCompatActivity {
 
             WeatherReport searchedCity = new WeatherReport(temperature, description, humidity, windSpeed, city);
             addCityToList(searchedCity);
-            //listView.setAdapter(adapter);
+
             adapter.notifyDataSetChanged();
 
         }
 
+    }
+
+    public void showDialog(){
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Remove city")
+                .setMessage("Add city to list?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        removeCityFromList();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(getApplicationContext(),"Operation canceled",Toast.LENGTH_LONG).show();
+                    }
+                })
+                .show();
+    }
+
+    private void saveData() {
+        SharedPreferences preferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(citiesList);
+        editor.putString("citiesList",json);
+        editor.apply();
+    }
+
+    private void loadData(){
+        SharedPreferences preferences = getSharedPreferences("shared preferences", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = preferences.getString("citiesList", null);
+        Type type = new TypeToken<ArrayList<WeatherReport>>(){}.getType();
+        citiesList=gson.fromJson(json, type);
+
+        if (citiesList == null) {
+            citiesList = new ArrayList<>();
+        }
     }
 
 
