@@ -115,8 +115,8 @@ public class SearchCityActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //Inform the user: it was impossible to retrieve the data
-                        TextView textView=findViewById(R.id.ErrorText);
-                        textView.setVisibility(View.VISIBLE);
+                        Toast.makeText(getApplicationContext(),"Invalid city!",Toast.LENGTH_LONG).show();
+                        searchText.setText("");
                     }
                 }
         );
